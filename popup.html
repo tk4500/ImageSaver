@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pinboard</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>My Pinboard</h1>
+    
+    <div class="controls">
+      <form id="new-folder-form">
+        <input type="text" id="folder-name-input" placeholder="New folder name" required>
+        <button type="submit">Create Folder</button>
+      </form>
+    </div>
+
+    <div class="content">
+      <div id="folders-list" class="sidebar">
+        <!-- Folders will be dynamically inserted here -->
+      </div>
+      <div id="images-container" class="main-content">
+        <h2>Select a folder to view images.</h2>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
