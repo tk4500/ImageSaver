@@ -43,7 +43,9 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
-button:hover { background-color: #0056b3; }
+button:hover {
+  background-color: #0056b3;
+}
 
 .content {
   display: flex;
@@ -64,8 +66,13 @@ button:hover { background-color: #0056b3; }
   border-radius: 4px;
   font-weight: 500;
 }
-.folder-item:hover { background-color: #e9e9ed; }
-.folder-item.active { background-color: #007bff; color: white; }
+.folder-item:hover {
+    background-color: #e9e9ed;
+}
+.folder-item.active {
+    background-color: #007bff;
+    color: white;
+}
 
 .main-content {
   flex-grow: 1;
@@ -99,4 +106,33 @@ button:hover { background-color: #0056b3; }
   display: block;
   margin: 5px auto 0 auto;
 }
-.delete-btn:hover { background-color: #c82333; }
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.folder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.folder-name {
+  flex-grow: 1; /* Allows the name to take up available space */
+}
+
+.delete-folder-btn {
+  font-size: 20px;
+  font-weight: bold;
+  color: #aaa;
+  padding: 0 5px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.delete-folder-btn:hover {
+  color: #dc3545;
+  background-color: #f1f1f1;
+}

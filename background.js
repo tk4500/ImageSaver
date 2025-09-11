@@ -1,46 +1,83 @@
-// Function to get our data from storage
-const getPinboardData = async () => {
-  const result = await chrome.storage.local.get(['pinboard']);
-  // If no data exists, initialize with a default structure
-  return result.pinboard || { folders: { 'Default': [] } };
+// --- Storage Key Constants ---
+const FOLDER_LIST_KEY = 'pinboard_folders';
+const getFolderDataKey = (folderName) => `pinboard_data_${folderName}`;
+
+// Function to get the list of folder names
+const getFolderList = async () => {
+  const result = await chrome.storage.local.get(FOLDER_LIST_KEY);
+  // If no folder list exists, initialize it with 'Default'
+  if (!result[FOLDER_LIST_KEY]) {
+    const defaultFolders = ['Default'];
+    await chrome.storage.local.set({ [FOLDER_LIST_KEY]: defaultFolders });
+    // Also initialize the data for the 'Default' folder
+    await chrome.storage.local.set({ [getFolderDataKey('Default')]: [] });
+    return defaultFolders;
+  }
+  return result[FOLDER_LIST_KEY];
 };
 
-// Create the context menu item when the extension is installed
-chrome.runtime.onInstalled.addListener(() => {
+// --- Core Function to Build the Dynamic Context Menu ---
+const updateContextMenu = async () => {
+  await chrome.contextMenus.removeAll();
+  const folderNames = await getFolderList();
+
   chrome.contextMenus.create({
-    id: "saveToPinboard",
+    id: "pinboard-parent",
     title: "Save Image to Pinboard",
-    contexts: ["image"] // This makes it appear only when you right-click an image
+    contexts: ["image"]
   });
+
+  if (folderNames.length === 0) return;
+
+  folderNames.forEach(folderName => {
+    chrome.contextMenus.create({
+      id: `save-to-${folderName}`,
+      parentId: "pinboard-parent",
+      title: folderName,
+      contexts: ["image"]
+    });
+  });
+};
+
+// --- Event Listeners ---
+
+// 1. When installed, build the menu for the first time.
+chrome.runtime.onInstalled.addListener(() => {
+  updateContextMenu();
 });
 
-// Listen for when the context menu item is clicked
+// 2. Listen for changes ONLY to the folder list to rebuild the menu.
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes[FOLDER_LIST_KEY]) {
+    console.log("Pinboard folder list changed. Rebuilding context menu.");
+    updateContextMenu();
+  }
+});
+
+// 3. Listen for a click on a context menu item.
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === "saveToPinboard") {
+  if (info.menuItemId && info.menuItemId.toString().startsWith('save-to-')) {
     const imageUrl = info.srcUrl;
     const pageUrl = info.pageUrl;
+    const folderName = info.menuItemId.toString().substring('save-to-'.length);
+    const folderDataKey = getFolderDataKey(folderName);
 
-    if (!imageUrl) {
-      console.error("Pinboard: No image URL found.");
-      return;
-    }
+    if (!imageUrl) return;
 
-    const data = await getPinboardData();
-    
-    // Create an object for the new image
+    // Get the data for THIS SPECIFIC FOLDER
+    const result = await chrome.storage.local.get(folderDataKey);
+    const folderImages = result[folderDataKey] || [];
+
     const newImage = {
       src: imageUrl,
       page: pageUrl,
-      id: `img-${Date.now()}` // Unique ID for easy deletion
+      id: `img-${Date.now()}`
     };
 
-    // Add the new image to the 'Default' folder
-    // In a future version, you could let the user choose the folder here!
-    data.folders['Default'].push(newImage);
+    folderImages.push(newImage);
 
-    // Save the updated data back to storage
-    await chrome.storage.local.set({ pinboard: data });
-
-    console.log("Pinboard: Image saved!", newImage);
+    // Save the data for THIS SPECIFIC FOLDER
+    await chrome.storage.local.set({ [folderDataKey]: folderImages });
+    console.log(`Pinboard: Image saved to "${folderName}"!`);
   }
 });
