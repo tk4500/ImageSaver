@@ -70,7 +70,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
     const newImage = {
       src: imageUrl,
-      page: pageUrl,
       id: `img-${Date.now()}`
     };
 

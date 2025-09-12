@@ -58,6 +58,7 @@ button:hover {
   border-right: 1px solid #ddd;
   padding-right: 15px;
   overflow-y: auto;
+  flex-shrink: 0; /* <-- ADD THIS LINE */
 }
 
 .folder-item {

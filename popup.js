@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const img = document.createElement('img');
       img.src = image.src;
-      img.addEventListener('click', () => chrome.tabs.create({ url: image.page }));
+      img.addEventListener('click', () => chrome.tabs.create({ url: image.src }));
 
       const deleteBtn = document.createElement('button');
       deleteBtn.textContent = 'Delete';
