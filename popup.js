@@ -10,10 +10,21 @@ function deleteSelectedFolders() {
   const selected = Array.from(document.querySelectorAll('.folder-item.selected'));
   if (selected.length === 0) return;
   if (!confirm(`Delete ${selected.length} selected folder(s)?`)) return;
+  // Gather current folder names from DOM
+  const currentFolderNames = Array.from(foldersListEl.querySelectorAll('.folder-name')).map(el => el.textContent);
   selected.forEach(item => {
     const name = item.querySelector('.folder-name').textContent;
     deleteFolder(name, currentFolderNames);
   });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
+  // After deletion, disable the bulk delete button until new selection
+  const deleteBtn = document.getElementById('delete-selected-btn');
+  if (deleteBtn) deleteBtn.disabled = true;
+  // Clear visual selection state
+  document.querySelectorAll('.folder-item.selected').forEach(item => item.classList.remove('selected'));
+  showToast('Selected folders deleted');
 }
 
 document.addEventListener('keydown', (e) => {
@@ -28,6 +39,32 @@ document.addEventListener('keydown', (e) => {
     deleteSelectedFolders();
   }
 });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
+
+function renderBulkControls() {
+  // expose for testing
+  if (typeof window !== 'undefined') {
+    window.renderBulkControls = renderBulkControls;
+  }
+  const container = document.getElementById('bulk-controls');
+  // Clear any existing controls
+  container.innerHTML = '';
+  const selectAllBtn = document.createElement('button');
+  selectAllBtn.type = 'button';
+  selectAllBtn.id = 'select-all-btn';
+  selectAllBtn.textContent = 'Select All';
+  selectAllBtn.addEventListener('click', selectAllFolders);
+  const deleteSelBtn = document.createElement('button');
+  deleteSelBtn.type = 'button';
+  deleteSelBtn.id = 'delete-selected-btn';
+  deleteSelBtn.textContent = 'Delete Selected';
+  deleteSelBtn.disabled = true;
+  deleteSelBtn.addEventListener('click', deleteSelectedFolders);
+  container.appendChild(selectAllBtn);
+  container.appendChild(deleteSelBtn);
+}
 
 function showToast(message) {
   const toastEl = document.getElementById('toast');
@@ -64,6 +101,9 @@ function showToast(message) {
         folderDiv.classList.add('active');
         await displayImages(name); // Now an async operation
       });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
 
       folderDiv.appendChild(folderNameSpan);
 
@@ -76,74 +116,55 @@ function showToast(message) {
           e.stopPropagation();
           deleteFolder(name, folderNames);
         });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
         folderDiv.appendChild(deleteFolderBtn);
       }
       foldersListEl.appendChild(folderDiv);
     });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
   };
 
+  // Display images for a folder with loading spinner
   const displayImages = async (folderName) => {
-  const spinner = document.getElementById('loading-spinner');
-  spinner.style.display = 'block';
-  // Clear any previous content while loading
-  imagesContainer.innerHTML = '';
-  const folderDataKey = getFolderDataKey(folderName);
-  const result = await chrome.storage.local.get(folderDataKey);
-  const images = result[folderDataKey] || [];
-  spinner.style.display = 'none';
-
-  if (images.length === 0) {
-    imagesContainer.innerHTML = `<h2>No images in "${folderName}".</h2>`;
-    return;
-  }
-
-  images.forEach(image => {
-    const imageCard = document.createElement('div');
-    imageCard.className = 'image-card';
-    const img = document.createElement('img');
-    img.alt = image.title || 'Saved image';
-    img.addEventListener('click', () => chrome.tabs.create({ url: image.src }));
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.addEventListener('click', () => deleteImage(folderName, image.id, images));
-    imageCard.appendChild(img);
-    imageCard.appendChild(deleteBtn);
-    imagesContainer.appendChild(imageCard);
-  });
-};
-    imagesContainer.innerHTML = '<h2>Loading...</h2>';
+    const spinner = document.getElementById('loading-spinner');
+    spinner.style.display = 'block';
+    imagesContainer.innerHTML = '';
     const folderDataKey = getFolderDataKey(folderName);
     const result = await chrome.storage.local.get(folderDataKey);
     const images = result[folderDataKey] || [];
-    
-    imagesContainer.innerHTML = ''; // Clear loading message
+    spinner.style.display = 'none';
 
     if (images.length === 0) {
       imagesContainer.innerHTML = `<h2>No images in "${folderName}".</h2>`;
       return;
     }
 
+    const fragment = document.createDocumentFragment();
     images.forEach(image => {
       const imageCard = document.createElement('div');
       imageCard.className = 'image-card';
-      
       const img = document.createElement('img');
-          // Set alt text for accessibility
-    img.alt = image.title || 'Saved image';
-
+      img.alt = image.title || 'Saved image';
       img.addEventListener('click', () => chrome.tabs.create({ url: image.src }));
-
       const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
       deleteBtn.textContent = 'Delete';
       deleteBtn.className = 'delete-btn';
       deleteBtn.addEventListener('click', () => deleteImage(folderName, image.id, images));
-
       imageCard.appendChild(img);
       imageCard.appendChild(deleteBtn);
-      imagesContainer.appendChild(imageCard);
+      fragment.appendChild(imageCard);
     });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
+    imagesContainer.appendChild(fragment);
   };
+
 
   // --- Data Management Functions ---
 
@@ -158,20 +179,29 @@ function showToast(message) {
     if (!currentFolders.includes(folderName)) {
       const newFolders = [...currentFolders, folderName];
       await chrome.storage.local.set({ [FOLDER_LIST_KEY]: newFolders });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
       // Initialize empty data for the new folder
       await chrome.storage.local.set({ [getFolderDataKey(folderName)]: [] });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
       folderNameInput.value = '';
       await initialize();
+      showToast('Folder created');
     } else {
-      alert("A folder with that name already exists.");
+      showToast('Folder already exists');
     }
   };
-
   const deleteFolder = async (folderNameToDelete, currentFolders) => {
     if (confirm(`Are you sure you want to delete "${folderNameToDelete}"?`)) {
       const newFolders = currentFolders.filter(name => name !== folderNameToDelete);
       // Update the master folder list
       await chrome.storage.local.set({ [FOLDER_LIST_KEY]: newFolders });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
       // Remove the specific data for that folder
       await chrome.storage.local.remove(getFolderDataKey(folderNameToDelete));
       
@@ -183,6 +213,9 @@ function showToast(message) {
   const deleteImage = async (folderName, imageId, currentImages) => {
     const newImages = currentImages.filter(image => image.id !== imageId);
     await chrome.storage.local.set({ [getFolderDataKey(folderName)]: newImages });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
     // Refresh the view for the current folder
     await displayImages(folderName);
   };
@@ -197,18 +230,34 @@ function showToast(message) {
     if (!folderNames) {
         folderNames = ['Default'];
         await chrome.storage.local.set({ [FOLDER_LIST_KEY]: folderNames });
-        await chrome.storage.local.set({ [getFolderDataKey('Default')]: [] });
-    }
+        // Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
 
+
+        await chrome.storage.local.set({ [getFolderDataKey('Default')]: [] });
+        // Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
+    }
+    
     displayFolders(folderNames);
   };
+// expose initialize for testing
+if (typeof window !== 'undefined') {
+window.initialize = initialize;
+}
 
   newFolderForm.addEventListener('submit', handleCreateFolder);
   
   initialize().then(() => {
-    const firstFolder = foldersListEl.querySelector('.folder-item .folder-name');
-    if (firstFolder) {
-      firstFolder.click();
-    }
-  });
+      const firstFolder = foldersListEl.querySelector('.folder-item .folder-name');
+      if (firstFolder) {
+        firstFolder.click();
+      }
+      // Render bulk action controls after UI is ready
+      renderBulkControls();
+    });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)
+
+
 });
+// Trigger DOMContentLoaded for environments where the document is already loaded (e.g., jsdom tests)

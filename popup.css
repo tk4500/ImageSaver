@@ -37,12 +37,7 @@ h1 {
   gap: var(--spacing);
 }
 
-#folder-name-input {
-  flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+
 
 button:focus, .folder-item:focus {
   outline: 2px solid #0056b3;
@@ -87,37 +82,6 @@ button:focus, .folder-item:focus {
 }
 .delete-btn:hover {
   background-color: #c82333;
-}
-
-.content {
-  display: flex;
-  gap: var(--spacing);
-  max-height: 400px;
-}
-
-.sidebar {
-  width: 150px;
-  border-right: 1px solid #ddd;
-  padding-right: var(--spacing);
-  overflow-y: auto;
-  flex-shrink: 0;
-}
-
-.folder-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing);
-  cursor: pointer;
-  border-radius: 4px;
-  font-weight: 500;
-}
-.folder-item:hover {
-  background-color: #e9e9ed;
-}
-.folder-item.active {
-  background-color: #0056b3;
-  color: white;
 }
 
 .main-content {
@@ -165,12 +129,7 @@ button:focus, .folder-item:focus {
 
 
 
-#folder-name-input {
-  flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+
 
 /* Focus outline for keyboard navigation */
 button:focus, .folder-item:focus {
@@ -178,16 +137,6 @@ button:focus, .folder-item:focus {
 }
 
 
-  padding: 8px 12px;
-  border: none;
-  background-color: #0056b3;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-button:hover {
-  background-color: #0056b3;
-}
 
 .content {
   display: flex;
@@ -204,17 +153,23 @@ button:hover {
 }
 
 .folder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
   cursor: pointer;
   border-radius: 4px;
   font-weight: 500;
 }
 .folder-item:hover {
-    background-color: #e9e9ed;
+  background-color: #e9e9ed;
 }
 .folder-item.active {
-    background-color: #0056b3;
-    color: white;
+  background-color: #0056b3;
+  color: white;
+}
+.folder-item.active:focus {
+  outline: 2px solid #fff;
 }
 
 .main-content {
@@ -251,15 +206,6 @@ button:hover {
 }
 .delete-btn:hover {
   background-color: #c82333;
-}
-
-.folder-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 4px;
 }
 
 .folder-name {
