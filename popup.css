@@ -214,8 +214,8 @@ button:focus, .folder-item:focus {
 
 /* Loading spinner */
 .spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #0056b3;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #0056b3;
   border-radius: 50%;
   width: 24px;
   height: 24px;
