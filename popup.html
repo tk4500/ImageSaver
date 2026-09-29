@@ -14,7 +14,15 @@
                     <input type="text" id="folder-name-input"
                         placeholder="New folder name" required>
                     <button type="submit">Create Folder</button>
-                </form>
+                    // Add bulk selection UI
+    const bulkControls = document.createElement('div');
+    bulkControls.id = 'bulk-controls';
+    bulkControls.innerHTML = `
+      <button id="select-all-btn">Select All</button>
+      <button id="delete-selected-btn" disabled>Delete Selected</button>
+    `;
+    controls.appendChild(bulkControls);
+
             </div>
 
             <div class="content">
@@ -28,5 +36,6 @@
         </div>
 
         <script src="popup.js"></script>
-    </body>
+        <div class="toast" id="toast"></div>
+
 </html>

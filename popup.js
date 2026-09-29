@@ -1,4 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
+function showToast(message) {
+  const toastEl = document.getElementById('toast');
+  toastEl.textContent = message;
+  toastEl.classList.add('show');
+  setTimeout(() => toastEl.classList.remove('show'), 2000);
+}
+
+  document.addEventListener('DOMContentLoaded', () => {
+
   // --- Storage Key Constants (must match background.js) ---
   const FOLDER_LIST_KEY = 'pinboard_folders';
   const getFolderDataKey = (folderName) => `pinboard_data_${folderName}`;
@@ -61,7 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
       imageCard.className = 'image-card';
       
       const img = document.createElement('img');
-      img.src = image.src;
+          // Set alt text for accessibility
+    img.alt = image.title || 'Saved image';
+
       img.addEventListener('click', () => chrome.tabs.create({ url: image.src }));
 
       const deleteBtn = document.createElement('button');
