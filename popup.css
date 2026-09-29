@@ -4,25 +4,19 @@
   --spacing-lg: 16px;
 }
 
+/* Body and container */
+body {
   width: 100%;
   max-width: 500px;
   min-height: 300px;
   background-color: #f4f4f8;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  margin: 0;
-}
-
-  width: 100%;
-  max-width: 500px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  width: 500px;
-  min-height: 300px;
-  margin: 0;
-  background-color: #f4f4f8;
+  margin: 0 auto;
+  padding: var(--spacing);
 }
 
 .container {
-  padding: 15px;
+  padding: var(--spacing-lg);
 }
 
 h1 {
@@ -31,17 +25,145 @@ h1 {
   margin-top: 0;
   text-align: center;
   border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  padding-bottom: var(--spacing);
 }
 
 .controls {
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing);
 }
 
 #new-folder-form {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing);
 }
+
+#folder-name-input {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button:focus, .folder-item:focus {
+  outline: 2px solid #0056b3;
+}
+
+
+.controls button,
+.delete-folder-btn,
+.delete-btn {
+  padding: 8px 12px;
+  border: none;
+  background-color: #0056b3;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.controls button:hover,
+.delete-btn:hover {
+  background-color: #004080;
+}
+
+.delete-folder-btn {
+  font-size: 14px;
+  padding: 5px;
+  outline: 2px solid transparent;
+  transition: outline-color 0.2s;
+}
+.delete-folder-btn:focus {
+  outline-color: #0056b3;
+}
+.delete-folder-btn:hover {
+  color: #dc3545;
+  background-color: #f1f1f1;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  font-size: 10px;
+  padding: 3px 6px;
+  display: block;
+  margin: 5px auto 0 auto;
+}
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.content {
+  display: flex;
+  gap: var(--spacing);
+  max-height: 400px;
+}
+
+.sidebar {
+  width: 150px;
+  border-right: 1px solid #ddd;
+  padding-right: var(--spacing);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.folder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing);
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.folder-item:hover {
+  background-color: #e9e9ed;
+}
+.folder-item.active {
+  background-color: #0056b3;
+  color: white;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+#images-container img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin: 5px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+}
+
+.image-card {
+  display: inline-block;
+  vertical-align: top;
+  margin: 5px;
+  text-align: center;
+}
+
+.toast {
+  position: fixed;
+  bottom: var(--spacing);
+  right: var(--spacing);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: var(--spacing);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.toast.show {
+  opacity: 1;
+}
+
+.bulk-controls {
+  margin-top: var(--spacing);
+}
+.bulk-controls button {
+  margin-right: var(--spacing);
+}
+
+
 
 #folder-name-input {
   flex-grow: 1;
@@ -55,9 +177,10 @@ button:focus, .folder-item:focus {
   outline: 2px solid #0056b3;
 }
 
+
   padding: 8px 12px;
   border: none;
-  background-color: #007bff;
+  background-color: #0056b3;
   color: white;
   border-radius: 4px;
   cursor: pointer;
@@ -90,7 +213,7 @@ button:hover {
     background-color: #e9e9ed;
 }
 .folder-item.active {
-    background-color: #007bff;
+    background-color: #0056b3;
     color: white;
 }
 
@@ -143,19 +266,32 @@ button:hover {
   flex-grow: 1; /* Allows the name to take up available space */
 }
 
-/* Increase tap target for delete button */
+/* Loading spinner */
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0056b3;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .delete-folder-btn {
   font-size: 14px;
   padding: 5px;
+  outline: 2px solid transparent;
+  transition: outline-color 0.2s;
+}
+.delete-folder-btn:focus {
+  outline-color: #0056b3;
 }
 
-  font-size: 20px;
-  font-weight: bold;
-  color: #aaa;
-  padding: 0 5px;
-  border-radius: 50%;
-  line-height: 1;
-}
+
 
 .delete-folder-btn:hover {
   color: #dc3545;

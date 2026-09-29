@@ -1,3 +1,34 @@
+// Bulk‑action shortcuts and helper functions
+function selectAllFolders() {
+  const folderItems = document.querySelectorAll('.folder-item');
+  folderItems.forEach(item => item.classList.add('selected'));
+  const deleteBtn = document.getElementById('delete-selected-btn');
+  if (deleteBtn) deleteBtn.disabled = false;
+}
+
+function deleteSelectedFolders() {
+  const selected = Array.from(document.querySelectorAll('.folder-item.selected'));
+  if (selected.length === 0) return;
+  if (!confirm(`Delete ${selected.length} selected folder(s)?`)) return;
+  selected.forEach(item => {
+    const name = item.querySelector('.folder-name').textContent;
+    deleteFolder(name, currentFolderNames);
+  });
+}
+
+document.addEventListener('keydown', (e) => {
+  // Ctrl+A selects all folders (bulk‑action shortcut)
+  if (e.ctrlKey && e.key === 'a') {
+    e.preventDefault();
+    selectAllFolders();
+  }
+  // Ctrl+Shift+D deletes selected folders
+  if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+    e.preventDefault();
+    deleteSelectedFolders();
+  }
+});
+
 function showToast(message) {
   const toastEl = document.getElementById('toast');
   toastEl.textContent = message;
@@ -52,6 +83,35 @@ function showToast(message) {
   };
 
   const displayImages = async (folderName) => {
+  const spinner = document.getElementById('loading-spinner');
+  spinner.style.display = 'block';
+  // Clear any previous content while loading
+  imagesContainer.innerHTML = '';
+  const folderDataKey = getFolderDataKey(folderName);
+  const result = await chrome.storage.local.get(folderDataKey);
+  const images = result[folderDataKey] || [];
+  spinner.style.display = 'none';
+
+  if (images.length === 0) {
+    imagesContainer.innerHTML = `<h2>No images in "${folderName}".</h2>`;
+    return;
+  }
+
+  images.forEach(image => {
+    const imageCard = document.createElement('div');
+    imageCard.className = 'image-card';
+    const img = document.createElement('img');
+    img.alt = image.title || 'Saved image';
+    img.addEventListener('click', () => chrome.tabs.create({ url: image.src }));
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.addEventListener('click', () => deleteImage(folderName, image.id, images));
+    imageCard.appendChild(img);
+    imageCard.appendChild(deleteBtn);
+    imagesContainer.appendChild(imageCard);
+  });
+};
     imagesContainer.innerHTML = '<h2>Loading...</h2>';
     const folderDataKey = getFolderDataKey(folderName);
     const result = await chrome.storage.local.get(folderDataKey);

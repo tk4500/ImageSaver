@@ -14,14 +14,11 @@
                     <input type="text" id="folder-name-input"
                         placeholder="New folder name" required>
                     <button type="submit">Create Folder</button>
-                    // Add bulk selection UI
-    const bulkControls = document.createElement('div');
-    bulkControls.id = 'bulk-controls';
-    bulkControls.innerHTML = `
-      <button id="select-all-btn">Select All</button>
-      <button id="delete-selected-btn" disabled>Delete Selected</button>
-    `;
-    controls.appendChild(bulkControls);
+                    <div id="bulk-controls" class="bulk-controls"></div>
+
+    <!-- Bulk selection UI is now handled in popup.js – placeholder removed -->
+
+
 
             </div>
 
@@ -36,6 +33,8 @@
         </div>
 
         <script src="popup.js"></script>
-        <div class="toast" id="toast"></div>
+    
+    <div id="loading-spinner" class="spinner" style="display:none;"></div>
+
 
 </html>
